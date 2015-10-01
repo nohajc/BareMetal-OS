@@ -96,6 +96,8 @@ os_Screen_Pixels:	equ os_SystemVariables + 276
 os_Screen_Bytes:	equ os_SystemVariables + 280
 os_Screen_Row_2:	equ os_SystemVariables + 284
 os_Font_Color:		equ os_SystemVariables + 288
+sata_port:		equ os_SystemVariables + 292
+ata_port:		equ os_SystemVariables + 296
 
 ; DW - Starting at offset 512, increments by 2
 os_NumCores:		equ os_SystemVariables + 512

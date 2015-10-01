@@ -11,7 +11,7 @@ align 16
 
 
 init_hdd:
-	call init_ahci
+	call hdd_setup
 	call init_bmfs
 	ret
 
