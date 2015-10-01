@@ -13,7 +13,7 @@ align 16
 ; -----------------------------------------------------------------------------
 ; init_bmfs -- Initialize the BMFS driver
 init_bmfs:
-	xchg bx, bx			; Bochs magic debug
+;	xchg bx, bx			; Bochs magic debug
 	push rdi
 	push rdx
 	push rcx
