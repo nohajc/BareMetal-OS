@@ -17,26 +17,46 @@ init_bmfs:
 	push rdx
 	push rcx
 	push rax
+	sub rsp, 512	; Allocate space for MBR on the stack
 
 	mov byte [bmfs_directory], 0
 
 	cmp byte [os_DiskEnabled], 0x01
 	jne init_bmfs_nodisk
 
+	mov rax, 0		; Read from the disk start
+	mov rcx, 1		; Read 1 sector (512B)
+	xor edx, edx	; Read from drive 0
+	mov rdi, rsp	; Read to the stack buffer
+	call readsectors
+
+	; Parse MBR to find the BMFS partition (we always work with the first one)
+	lea rbx, [rsp+446]	; First partition table entry address
+	mov rcx, 4			; There are four partition entries
+find_bmfs_partition:
+	cmp byte [rbx+4], 0xC2	; Compare partition type against 0xC2
+	je bmfs_partition_found	; This one is unused according to http://www.win.tue.nl/~aeb/partitions/partition_types-1.html
+	add rbx,0x10				; So we will use it for BMFS
+	dec rcx
+	je init_bmfs_nodisk		; This should not happen because we have already booted from 0xC2 partition
+	jmp find_bmfs_partition
+
+bmfs_partition_found:
+	; Get total blocks
+	mov eax, [rbx+0xC]		; Partition size in sectors
+	shr rax, 12				; rax * 512 / 2097152
+	mov [bmfs_TotalBlocks], rax
+
 	; Read directory to memory
-	mov rax, 8			; Start to read from 4K in
+	mov eax, [rbx+8]	; First sector of the BMFS partition
+	add rax, 8			; Start to read from 4K in
 	mov rcx, 8			; Read 8 sectors (4KiB)
 	xor edx, edx			; Read from drive 0
 	mov rdi, bmfs_directory
 	call readsectors
 
-	; Get total blocks
-	mov eax, [hd1_size]		; in mebibytes (MiB)
-	shr rax, 1
-	mov [bmfs_TotalBlocks], rax
-
 init_bmfs_nodisk:
-
+	add rsp, 512	; Free the stack buffer
 	pop rax
 	pop rcx
 	pop rdx
