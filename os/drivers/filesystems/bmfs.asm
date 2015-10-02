@@ -382,7 +382,6 @@ os_bmfs_file_delete_notfound:
 ;	RDI = Memory location to store blocks
 ; OUT:	
 os_bmfs_block_read:
-	xchg bx, bx
 	cmp rcx, 0
 	je os_bmfs_block_read_done	; Bail out if instructed to read nothing
 
