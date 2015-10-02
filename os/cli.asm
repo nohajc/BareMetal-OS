@@ -421,12 +421,13 @@ os_bmfs_file_list:
 	push rbx
 	push rax
 
-	mov rsi, Disk_Size_MSG
+	mov rsi, FS_Size_MSG
 	call os_string_length
 	call os_string_copy
 	add rdi, rcx
 
-	mov eax, [hd1_size]
+	mov eax, [bmfs_TotalBlocks]
+	shl rax, 1
 	call os_int_to_string
 	dec rdi
 	mov al, 0
@@ -494,7 +495,7 @@ os_bmfs_list_done:
 
 	ret
 
-Disk_Size_MSG: db 'Disk Size: ', 0
+FS_Size_MSG: db 'Filesystem Size: ', 0
 MiB_MSG: db ' MiB', 13, 0
 List_MSG: db 'Name                            | Size (Byte)        | Reserved (MiB)', 13, \
 		'==========================================================================', 13, 0
