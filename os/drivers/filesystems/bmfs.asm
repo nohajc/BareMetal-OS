@@ -382,6 +382,7 @@ os_bmfs_file_delete_notfound:
 ;	RDI = Memory location to store blocks
 ; OUT:	
 os_bmfs_block_read:
+	xchg bx, bx
 	cmp rcx, 0
 	je os_bmfs_block_read_done	; Bail out if instructed to read nothing
 
@@ -394,9 +395,9 @@ os_bmfs_block_read:
 	mov rbx, rcx
 	
 os_bmfs_block_read_loop:
-	mov rcx, 4096			; Read 2MiB at a time (4096 512-byte sectors = 2MiB)
+	mov rcx, 256			; Read 128KiB at a time (256 512-byte sectors = 128KiB)
 	call readsectors
-	sub rbx, 4096
+	sub rbx, 256
 	jnz os_bmfs_block_read_loop
 
 os_bmfs_block_read_done:
@@ -423,9 +424,9 @@ os_bmfs_block_write:
 	mov rbx, rcx
 	
 os_bmfs_block_write_loop:
-	mov rcx, 4096			; Write 2MiB at a time (4096 512-byte sectors = 2MiB)
+	mov rcx, 256			; Write 128KiB at a time (256 512-byte sectors = 128KiB)
 	call writesectors
-	sub rbx, 4096
+	sub rbx, 256
 	jnz os_bmfs_block_write_loop
 
 os_bmfs_block_write_done:
