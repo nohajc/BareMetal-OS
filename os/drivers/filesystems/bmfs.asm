@@ -50,6 +50,7 @@ bmfs_partition_found:
 
 	; Read directory to memory
 	mov eax, [rbx+8]	; First sector of the BMFS partition
+	mov [bmfs_FirstBlock], rax
 	add rax, 8			; Start to read from 4K in
 	mov rcx, 8			; Read 8 sectors (4KiB)
 	xor edx, edx			; Read from drive 0
@@ -386,6 +387,7 @@ os_bmfs_block_read:
 
 	; Calculate the starting sector
 	shl rax, 12			; Multiply block start count by 4096 to get sector start count
+	add rax, [bmfs_FirstBlock]	; Add first FS block sector number to get absolute sector start count
 
 	; Calculate sectors to read
 	shl rcx, 12			; Multiply block count by 4096 to get number of sectors to read
@@ -414,6 +416,7 @@ os_bmfs_block_write:
 
 	; Calculate the starting sector
 	shl rax, 12			; Multiply block start count by 4096 to get sector start count
+	add rax, [bmfs_FirstBlock]	; Add first FS block sector number to get absolute sector start count
 
 	; Calculate sectors to write
 	shl rcx, 12			; Multiply block count by 4096 to get number of sectors to write
